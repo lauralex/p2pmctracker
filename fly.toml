@@ -1,0 +1,21 @@
+# fly.toml app configuration file generated for p2pmc on 2023-05-10T00:26:52+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "p2pmc"
+primary_region = "cdg"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[env]
+  DEBUG = false
+
+[mounts]
+  source = "p2pmc_data"
+  destination = "/data"

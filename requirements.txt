@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+pydevd-pycharm~=231.9011.38
+python-multipart
+aiofiles
