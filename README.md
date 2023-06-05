@@ -19,4 +19,4 @@ Only one server can be connected to the backend service at a time.
 ### Delta-patch:
 - Description: A tool to apply delta patches
 - Source: https://github.com/alexkasko/delta-updater/tree/master/delta-patch
-- License: MIT license (copy of it present in `LICENSE-MIT-THIRDPARTY` file)
+- License: MIT license (copy of it present in [LICENSE-MIT-THIRDPARTY](LICENSE-MIT-THIRDPARTY) file)
