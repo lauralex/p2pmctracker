@@ -4,10 +4,10 @@ Create a P2P Minecraft system using Purpur API (for the server side) and FabricM
 
 ## Technical details
 ### Server side (Purpur plugin logic)
-Go to the ... repo
+Go to the following repo: https://github.com/lauralex/p2pminecraft
 
 ### Client side (FabricMC mod logic)
-Go to the ... repo
+Go to the following repo: https://github.com/lauralex/p2pmcclient
 ### P2P backend service (FastAPI server logic)
 This is the backend service that will be used to connect the clients to the server. It will be used to store the server IP and port.
 
