@@ -15,6 +15,8 @@ It handles Minecraft world data updates and server IP and port updates.
 
 Only one server can be connected to the backend service at a time.
 
+**Notes**: create a fly.io secret named `PASSWORD` and set it to the password you want to use for the protected routes.
+
 ## Third party tools
 ### Delta-patch:
 - Description: A tool to apply delta patches

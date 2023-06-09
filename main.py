@@ -12,13 +12,16 @@
 import asyncio
 import logging
 import os
+import secrets
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Annotated
 
 import aiofiles
-from fastapi import FastAPI, Request, UploadFile, BackgroundTasks, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, UploadFile, BackgroundTasks, WebSocket, WebSocketDisconnect, Depends, status, \
+    HTTPException
 from fastapi.responses import FileResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 
 if os.getenv('DEBUG', 'false').lower() == 'true':
@@ -27,6 +30,7 @@ if os.getenv('DEBUG', 'false').lower() == 'true':
     pydevd_pycharm.settrace('4.tcp.eu.ngrok.io', port=16993, stdoutToServer=True, stderrToServer=True)
 
 logging.basicConfig(level=logging.INFO)
+
 
 async def remove_inactive_peers():
     while True:
@@ -47,6 +51,23 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+security = HTTPBasic()
+
+
+def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_password = os.getenv("PASSWORD", "admin")
+    current_password_bytes = credentials.password.encode("utf-8")
+    correct_password_bytes = correct_password.encode("utf-8")
+
+    is_correct_password = secrets.compare_digest(current_password_bytes, correct_password_bytes)
+
+    if not is_correct_password:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return True
 
 
 class WebsocketConnectionManager:
@@ -271,7 +292,7 @@ def get_peer():
 
 
 @app.post("/upload_plugin")
-async def upload_plugin(file: UploadFile):
+async def upload_plugin(file: UploadFile, authenticated: Annotated[bool, Depends(authenticate)]):
     # Save the file to /data folder
     async with aiofiles.open(f"/data/p2pminecraft.jar", "wb") as f:
         await f.write(await file.read())
@@ -279,7 +300,7 @@ async def upload_plugin(file: UploadFile):
 
 
 @app.post("/upload_purpur_yaml")
-async def upload_purpur_yaml(file: UploadFile):
+async def upload_purpur_yaml(file: UploadFile, authenticated: Annotated[bool, Depends(authenticate)]):
     # Save the file to /data folder
     async with aiofiles.open(f"/data/purpur.yml", "wb") as f:
         await f.write(await file.read())
@@ -287,7 +308,7 @@ async def upload_purpur_yaml(file: UploadFile):
 
 
 @app.post("/upload_server_properties")
-async def upload_server_properties(file: UploadFile):
+async def upload_server_properties(file: UploadFile, authenticated: Annotated[bool, Depends(authenticate)]):
     # Save the file to /data folder
     async with aiofiles.open(f"/data/server.properties", "wb") as f:
         await f.write(await file.read())
@@ -295,7 +316,7 @@ async def upload_server_properties(file: UploadFile):
 
 
 @app.post("/upload_spigot_yaml")
-async def upload_spigot_yaml(file: UploadFile):
+async def upload_spigot_yaml(file: UploadFile, authenticated: Annotated[bool, Depends(authenticate)]):
     # Save the file to /data folder
     async with aiofiles.open(f"/data/spigot.yml", "wb") as f:
         await f.write(await file.read())
@@ -303,7 +324,7 @@ async def upload_spigot_yaml(file: UploadFile):
 
 
 @app.post("/upload_paper_world_yaml")
-async def upload_paper_world_yaml(file: UploadFile):
+async def upload_paper_world_yaml(file: UploadFile, authenticated: Annotated[bool, Depends(authenticate)]):
     # Save the file to /data folder
     async with aiofiles.open(f"/data/paper-world-defaults.yml", "wb") as f:
         await f.write(await file.read())
@@ -311,7 +332,7 @@ async def upload_paper_world_yaml(file: UploadFile):
 
 
 @app.post("/upload_pufferfish_yaml")
-async def upload_pufferfish_yaml(file: UploadFile):
+async def upload_pufferfish_yaml(file: UploadFile, authenticated: Annotated[bool, Depends(authenticate)]):
     # Save the file to /data folder
     async with aiofiles.open(f"/data/pufferfish.yml", "wb") as f:
         await f.write(await file.read())
@@ -319,7 +340,7 @@ async def upload_pufferfish_yaml(file: UploadFile):
 
 
 @app.post("/upload_bukkit_yaml")
-async def upload_bukkit_yaml(file: UploadFile):
+async def upload_bukkit_yaml(file: UploadFile, authenticated: Annotated[bool, Depends(authenticate)]):
     # Save the file to /data folder
     async with aiofiles.open(f"/data/bukkit.yml", "wb") as f:
         await f.write(await file.read())
